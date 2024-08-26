@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - break_kbe
+
+  product:
+    build:
+      context: ./product
+    container_name: product
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/breakinpedia
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - break_kbe
+
+  warehouse:
+    build:
+      context: ./warehouse
+    container_name: warehouse
+    expose:
+      - "8082"
+    ports:
+      - "8082:8082"
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/breakinpedia
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - break_kbe
+
+  currency:
+    build:
+      context: ./currency
+    container_name: currency
+    expose:
+      - "8083"
+    ports:
+      - "8083:8083"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - break_kbe
+
+  payment:
+    build:
+      context: ./payment
+    container_name: payment
+    expose:
+      - "8084"
+    ports:
+      - "8084:8084"
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/breakinpedia
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - break_kbe
+
+  order:
+    build:
+      context: ./order
+    container_name: order
+    expose:
+      - "8085"
+    ports:
+      - "8085:8085"
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/breakinpedia
+      PAYMENT_URL: http://payment:8084
+      CURRENCY_URL: http://currency:8083
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - currency
+      - payment
+    networks:
+      - break_kbe
+
+  gateway:
+    build:
+      context: ./gateway
+    container_name: gateway
+    expose:
+      - "1010"
+    ports:
+      - "1010:1010"
+    environment:
+      ORDER_URL: http://order:8085
+      PRODUCT_URL: http://product:8081
+      WAREHOUSE_URL: http://warehouse:8082
+#      RABBITMQ_HOST: rabbitmq
+#      PRODUCT_HOST: product
+#      ORDER_HOST: order
+#      WAREHOUSE_HOST: warehouse
+    networks:
+      - break_kbe
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - break_kbe
+
+networks:
+  break_kbe:

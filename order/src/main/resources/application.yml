@@ -1,0 +1,19 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URL}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    username: guest
+    password: guest
+#    listener:
+#      simple:
+#        auto-startup: true
+springdoc:
+  packages-to-scan: kbe.breakinpedia.orderservice.controller
+  api-docs:
+    path: /order-api
+server:
+  port: 8085

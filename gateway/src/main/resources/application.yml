@@ -1,0 +1,39 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order
+          #          uri: http://${ORDER_HOST:localhost}:8085
+          uri: ${ORDER_URL}
+          predicates:
+            - Path=/order/**, /order-api/**
+        - id: product
+          #          uri: http://${PRODUCT_HOST:localhost}:8081
+          uri: ${PRODUCT_URL}
+          predicates:
+            - Path=/product-api/**,/product/**
+        - id: warehouse
+          #          uri: http://${WAREHOUSE_HOST:localhost}:8082
+          uri: ${WAREHOUSE_URL}
+          predicates:
+            - Path=/warehouse/**, /warehouse-api/**
+
+security:
+  oauth2:
+    resourceserver:
+      jwt:
+        issuer-uri: http://localhost:8080/realms/breakinpedia
+
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    urls:
+      - name: product
+        url: /product-api
+      - name: order
+        url: /order-api
+      - name: warehouse
+        url: /warehouse-api
+server:
+  port: 1010

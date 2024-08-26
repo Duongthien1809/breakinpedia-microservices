@@ -1,0 +1,12 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URL}
+server:
+  port: 8081
+springdoc:
+  packages-to-scan: Breakdance.KBEProdukt.controller
+  api-docs:
+    path: /product-api
